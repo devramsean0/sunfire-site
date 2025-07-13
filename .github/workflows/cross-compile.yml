@@ -24,10 +24,16 @@ jobs:
         with:
           targets: sparc64-unknown-linux-gnu
 
-      - name: Configure Cargo linker
+      - name: Build project for sparc64
+        run: cargo build --release --target=sparc64-unknown-linux-gnu
+
+      - name: Create build directory and copy binary
         run: |
-          mkdir -p .cargo
-          cat <<EOF > .cargo/config.toml
-          [target.sparc64-unknown-linux-gnu]
-          linker = "sparc64-linux-gnu-gcc"
-          EOF
+          mkdir -p build
+          cp target/sparc64-unknown-linux-gnu/release/* build/ || true
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sparc64-binary
+          path: build/
