@@ -1,0 +1,12 @@
+[package]
+name = "sunfire-site"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bcrypt = "0.17.0"
+diesel = { version = "2.2.12", features = ["sqlite", "r2d2"] }
+rocket = "0.5.1"
+rocket_contrib = { version = "0.4.11", features = ["databases"] }
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"

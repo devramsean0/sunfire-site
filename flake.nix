@@ -24,6 +24,7 @@
             llvmPackages.bintools
             rustup
             bun
+            diesel-cli
           ];
 
           RUSTC_VERSION = overrides.toolchain.channel;

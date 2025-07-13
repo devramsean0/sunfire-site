@@ -1,0 +1,33 @@
+name: Cross-compile for sparc64
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-sparc64:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install sparc64 cross compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-sparc64-linux-gnu
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: sparc64-unknown-linux-gnu
+
+      - name: Configure Cargo linker
+        run: |
+          mkdir -p .cargo
+          cat <<EOF > .cargo/config.toml
+          [target.sparc64-unknown-linux-gnu]
+          linker = "sparc64-linux-gnu-gcc"
+          EOF

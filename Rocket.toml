@@ -1,0 +1,6 @@
+[global.databases]
+db = { url = "sqlite://database.db" }
+
+[development]
+address = "localhost"
+port = 8000
