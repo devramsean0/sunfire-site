@@ -1,6 +1,7 @@
 use std::{
     net::{TcpListener, TcpStream},
-    io::{BufReader, prelude::*}
+    io::{BufReader, prelude::*},
+    fs::{exists, read_to_string}
 };
 use simplelog::*;
 use log::{info, error, debug};
@@ -41,36 +42,35 @@ fn handle_connection(mut stream: TcpStream) {
     debug!("Parsed HTTP Data: {:#?}", http_request);
     info!("{}", http_request[0]);
 
-    let mut path = http_request[0]
+    let path = http_request[0]
         .split_whitespace()
         .nth(1)
         .unwrap_or("/");
 
-    // Handle File Extensions
-    let ext = path.split('.').last();
+    let normalized_path = sunfire_site::normalize_http_path(path);
+    debug!("Normalized Path: {} -> {}", path, normalized_path);
 
-    if !path.starts_with("/api") && !ext.is_some() {
-        let str_path = format!("{}index.html", path);
-        path = str_path.as_str();
-    }
-    
     let mut response;
 
     match path {
-        "/" => {
-            response = response::Response::new(
-                200,
-                vec!["Content-Type: text/html; charset=UTF-8"],
-                "<html><body><h1>Welcome to SunfireSite.rs!</h1></body></html>",
-            );
-        }
         _ => {
-            error!("404 Not Found for path: {}", path);
-            response = response::Response::new(
-                404,
-                vec!["Content-Type: text/html; charset=UTF-8"],
-                "<html><body><h1>404 Not Found</h1></body></html>",
-            );
+            let asset_path = sunfire_site::build_asset_path(normalized_path.as_str());
+            if exists(&asset_path).expect("Unable to read files") {
+                debug!("Asset at {} Exists!", asset_path);
+                let content = std::fs::read_to_string(asset_path);
+                response = response::Response::new(
+                    200,
+                    vec![],
+                    content.expect("Unable to read content")
+                );
+            } else {
+                error!("404 Not Found for path: {}", path);
+                response = response::Response::new(
+                    404,
+                    vec!["Content-Type: text/html; charset=UTF-8"],
+                    "<html><body><h1>404 Not Found</h1></body></html>".to_string(),
+                );
+            }
         }
     }
 

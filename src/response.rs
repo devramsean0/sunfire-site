@@ -1,11 +1,11 @@
 pub struct Response {
     status: i16,
     headers: Vec<&'static str>,
-    body: &'static str,
+    body: String,
 }
 
 impl Response {
-    pub fn new(status: i16, headers: Vec<&'static str>, body: &'static str) -> Self {
+    pub fn new(status: i16, headers: Vec<&'static str>, body: String) -> Self {
         Response { status, headers, body }
     }
 
@@ -17,7 +17,7 @@ impl Response {
         response.push_str("Server: SunfireSite.rs\r\n");
         response.push_str(format!("Content-Length: {}\r\n", self.body.len()).as_str());
         response.push_str("\r\n");
-        response.push_str(self.body);
+        response.push_str(self.body.as_str());
         response
     }
 }
