@@ -20,11 +20,11 @@ jobs:
           sudo apt-get install -y gcc-sparc64-linux-gnu
 
       - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: nightly
           targets: sparc64-unknown-linux-gnu
-      - name: Build STD LIB
-        run: cargo build 0-Zbuild std
+          components: rust-std
       - name: Build project for sparc64
         run: cargo build --release --target=sparc64-unknown-linux-gnu
 
